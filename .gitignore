@@ -1,0 +1,112 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+
+
+# =========================
+# Core: Gradle & builds
+# =========================
+.gradle/
+**/build/
+!**/src/**/build/            # Keep if you're generating build assets inside src (rare)
+gradle-app.setting
+*.log
+
+# Keep Gradle wrapper (do NOT ignore these)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Task name cache
+.gradletasknamecache
+
+# =========================
+# Android SDK/NDK & outputs
+# =========================
+
+# Standard build outputs (all modules)
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+output-metadata.json
+
+# Android Studio generated folders
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Heap dumps / profiling
+*.hprof
+
+# =========================
+# Keystores & credentials
+# =========================
+*.jks
+*.keystore
+# Firebase/Google Services (usually contains API keys)
+google-services.json
+# If you use flavor-specific service configs:
+**/google-services.json
+
+# =========================
+# IntelliJ/Android Studio (JetBrains)
+# =========================
+# Project files
+*.iws
+*.ipr
+
+# Entire .idea, but allow optional whitelisting below if your team prefers
+.idea/
+
+# (Optional) If you prefer to share selected .idea files, comment out ".idea/" above
+# and whitelist only stable/shared files. Otherwise keep .idea fully ignored.
+# .idea/codestyles/
+# .idea/codeStyles/
+# .idea/vcs.xml
+# .idea/encodings.xml
+# .idea/misc.xml
+# .idea/dictionaries/
+# .idea/sqldialects.xml
+# .idea/inspectionProfiles/
+
+# High-churn / user-specific JetBrains files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/caches/
+.idea/**/libraries/
+.idea/**/httpRequests/
+.idea/**/usage.statistics.xml
+.idea/**/shelf
+.idea/**/dynamic.xml
+.idea/**/deploymentTargetDropDown.xml
+.idea/**/render.experimental.xml
+.idea/**/gradle.xml
+.idea/**/navEditor.xml
+.idea/**/assetWizardSettings.xml
+.idea/**/build_file_checksums.ser
+
+# =========================
+# OS-specific noise
+# =========================
+# Windows
+Thumbs.db
+
+# =========================
+# Tooling/Generated code (optional)
+# =========================
+# If you generate code outside build/, consider ignoring here (adjust to your project)
+# /generated/
