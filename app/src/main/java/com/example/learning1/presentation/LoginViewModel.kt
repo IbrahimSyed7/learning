@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.learning1.data.dto.NetworkResponse
 import com.example.learning1.domain.LoginUseCase
 import com.example.learning1.domain.entity.User
+import com.example.learning1.utils.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,11 +15,15 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import javax.inject.Inject
 
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase,
+    private val dispatcherProvider: DispatcherProvider
+) : ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginStates())
     val loginState = _loginState.asStateFlow()
@@ -45,10 +51,17 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
     }
 
     private fun login(userName: String, password: String) {
-        if (userName.isBlank() || password.isBlank()) {
+        val userNameValidation = validateUsername(userName)
+        val passwordValidation = validatePassword(password)
+
+        if (userNameValidation != null && passwordValidation != null) {
+            _loginState.update {
+                it.copy(userNameError = userNameValidation, passwordError = passwordValidation)
+            }
             return
         }
-        viewModelScope.launch {
+
+        viewModelScope.launch(dispatcherProvider.main()) {
             _loginState.update { it.copy(isLoading = true) }
             val result = loginUseCase.invoke(userName, password)
             when (result) {
@@ -95,7 +108,10 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
     private fun validatePassword(
         query: String,
     ): String? =
-        if (query.length < 8) ("Password Length must be greater than 8") else null
+        if (query.length < 6) ("Password Length must be greater than 5") else null
 
 }
+
+
+
 
