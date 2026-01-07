@@ -48,7 +48,7 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
         if (userName.isBlank() || password.isBlank()) {
             return
         }
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             _loginState.update { it.copy(isLoading = true) }
             val result = loginUseCase.invoke(userName, password)
             when (result) {
