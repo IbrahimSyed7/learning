@@ -78,7 +78,7 @@ fun LoginView(modifier: Modifier, state: State<LoginStates>, onEvent: (LoginEven
             state.value.username, onValueChange = {
                 onEvent(LoginEvents.UserNameChangedEvent(it))
             }, enabled = state.value.isLoading.not(), label = {
-                Text("Email")
+                Text("Username")
             }, isError = state.value.userNameError != null,
             supportingText = {
                 if (state.value.userNameError != null) {
