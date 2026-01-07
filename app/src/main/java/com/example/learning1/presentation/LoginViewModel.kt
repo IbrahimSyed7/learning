@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.learning1.data.dto.NetworkResponse
 import com.example.learning1.domain.LoginUseCase
 import com.example.learning1.domain.entity.User
-import com.example.learning1.utils.Utility
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(val loginUseCase: LoginUseCase) : ViewModel() {
+class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase) : ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginStates())
     val loginState = _loginState.asStateFlow()
@@ -30,73 +30,72 @@ class LoginViewModel @Inject constructor(val loginUseCase: LoginUseCase) : ViewM
             is LoginEvents.LoginEvent -> login(event.username, event.password)
             is LoginEvents.PasswordChangedEvent -> {
                 _loginState.update { it.copy(password = event.password) }
-                validatePasswordAndUpdateState(event.password) { isValid, message ->
-                    _loginState.update {
-                        it.copy(passwordError = message)
-                    }
+                _loginState.update {
+                    it.copy(passwordError = validatePassword(event.password))
                 }
             }
 
             is LoginEvents.UserNameChangedEvent -> {
                 _loginState.update { it.copy(username = event.userName) }
-                validateUserNameAndUpdateState(event.userName) { isValid, message ->
+                _loginState.update {
+                    it.copy(userNameError = validateUsername(event.userName))
+                }
+            }
+        }
+    }
+
+    private fun login(userName: String, password: String) {
+        if (userName.isBlank() || password.isBlank()) {
+            return
+        }
+        viewModelScope.launch(Dispatchers.Main) {
+            _loginState.update { it.copy(isLoading = true) }
+            val result = loginUseCase.invoke(userName, password)
+            when (result) {
+                is NetworkResponse.Exception -> {
+                    _loginEffects.emit(LoginEffects.OnError("Exception: ${result.message}"))
                     _loginState.update {
-                        it.copy(userNameError = message)
+                        it.copy(
+                            errorMessage = "Exception: ${result.message}",
+                            isLoading = false
+                        )
+                    }
+                }
+
+                is NetworkResponse.NetworkError -> {
+                    _loginEffects.emit(LoginEffects.OnError("Exception: ${result.message}"))
+                    _loginState.update {
+                        it.copy(
+                            errorMessage = "${result.statusCode} - ${result.message}",
+                            isLoading = false
+                        )
+                    }
+                }
+
+                is NetworkResponse.Success<User> -> {
+                    _loginEffects.emit(LoginEffects.OnSuccess(result.response.toString()))
+
+                    _loginState.update {
+                        it.copy(
+                            successMessage = result.response.toString(),
+                            isLoading = false
+                        )
                     }
                 }
             }
         }
     }
 
-    fun login(userName: String, password: String) {
-        if (userName.isBlank() || password.isBlank()) {
-            return
-        }
-        viewModelScope.launch {
-            _loginState.update { it.copy(isLoading = true) }
-            val result = loginUseCase.invoke(userName, password)
-            when (result) {
-                is NetworkResponse.Exception -> {
-                    _loginEffects.emit(LoginEffects.OnError("Exception: ${result.message}"))
-                    _loginState.update { it.copy(errorMessage = "Exception: ${result.message}", isLoading = false) }
-                }
-
-                is NetworkResponse.NetworkError -> {
-                    _loginEffects.emit(LoginEffects.OnError("Exception: ${result.message}"))
-                    _loginState.update { it.copy(errorMessage = "${result.statusCode} - ${result.message}", isLoading = false) }
-                }
-
-                is NetworkResponse.Success<User> -> {
-                    _loginEffects.emit(LoginEffects.OnSuccess(result.response.toString()))
-
-                    _loginState.update { it.copy(successMessage = result.response.toString(), isLoading = false) }
-                }
-            }
-        }
-    }
-
-    private inline fun validateUserNameAndUpdateState(
+    private fun validateUsername(
         query: String,
-        result: (Boolean, String?) -> Unit
-    ) {
-        if (query.isBlank() || (query.length < 5)) {
-            result(false, "Username length should be greater than 4")
-        } else {
-            result(true, null)
-        }
-    }
+    ): String? =
+        if (query.isBlank() || (query.length < 5)) "Username length should be greater than 4" else null
 
-    private inline fun validatePasswordAndUpdateState(
+
+    private fun validatePassword(
         query: String,
-        result: (Boolean, String?) -> Unit
-    ) {
-        if (query.length < 8) {
-            result(false, "Password Length must be greater than 8")
-        } else {
-            result(true, null)
-        }
-
-    }
-
+    ): String? =
+        if (query.length < 8) ("Password Length must be greater than 8") else null
 
 }
+

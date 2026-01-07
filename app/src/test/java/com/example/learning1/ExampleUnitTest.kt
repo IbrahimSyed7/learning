@@ -1,5 +1,7 @@
 package com.example.learning1
 
+import com.example.learning1.presentation.LoginViewModel
+import io.mockk.mockk
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -10,8 +12,13 @@ import org.junit.Assert.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+
+    private val viewmodel: LoginViewModel = mockk( )
+
+
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun `username validation`(){
+
     }
+
 }
