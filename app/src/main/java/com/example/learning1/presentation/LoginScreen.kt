@@ -38,9 +38,6 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
 
     val state = viewModel.loginState.collectAsStateWithLifecycle()
 
-
-    val hostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
