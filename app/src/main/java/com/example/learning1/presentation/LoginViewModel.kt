@@ -5,17 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.learning1.data.dto.NetworkResponse
 import com.example.learning1.domain.LoginUseCase
 import com.example.learning1.domain.entity.User
+import com.example.learning1.ui.theme.Constants
 import com.example.learning1.utils.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import javax.inject.Inject
 
 
@@ -66,7 +64,7 @@ class LoginViewModel @Inject constructor(
             val result = loginUseCase.invoke(userName, password)
             when (result) {
                 is NetworkResponse.Exception -> {
-                    _loginEffects.emit(LoginEffects.OnError("Exception: ${result.message}"))
+                    _loginEffects.emit(LoginEffects.OnError("$Constants.exception: ${result.message}"))
                     _loginState.update {
                         it.copy(
                             errorMessage = "Exception: ${result.message}",
@@ -76,7 +74,7 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is NetworkResponse.NetworkError -> {
-                    _loginEffects.emit(LoginEffects.OnError("Exception: ${result.message}"))
+                    _loginEffects.emit(LoginEffects.OnError("$Constants.exception ${result.message}"))
                     _loginState.update {
                         it.copy(
                             errorMessage = "${result.statusCode} - ${result.message}",
@@ -102,13 +100,13 @@ class LoginViewModel @Inject constructor(
     private fun validateUsername(
         query: String,
     ): String? =
-        if (query.isBlank() || (query.length < 5)) "Username length should be greater than 4" else null
+        if (query.isBlank() || (query.length < 5)) Constants.userNameValidationError else null
 
 
     private fun validatePassword(
         query: String,
     ): String? =
-        if (query.length < 6) ("Password Length must be greater than 5") else null
+        if (query.length < 6) (Constants.passwordValidationError) else null
 
 }
 

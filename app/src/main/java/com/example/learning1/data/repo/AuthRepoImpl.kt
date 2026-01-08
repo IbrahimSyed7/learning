@@ -6,6 +6,7 @@ import com.example.learning1.data.mappers.toUser
 import com.example.learning1.di.APIService
 import com.example.learning1.domain.entity.User
 import com.example.learning1.domain.repo.AuthRepo
+import com.example.learning1.ui.theme.Constants
 import org.json.JSONObject
 import javax.inject.Inject
 
@@ -20,8 +21,8 @@ class AuthRepoImpl @Inject constructor(val apiService: APIService) : AuthRepo {
 
                 val msg = result.errorBody()?.string()
 
-                val message = runCatching { JSONObject(msg?:"").getString("message") }.getOrElse {
-                    msg ?: "Unknown error"
+                val message = runCatching { JSONObject(msg ?: "").getString("message") }.getOrElse {
+                    msg ?: Constants.unknownError
                 }
 
                 return NetworkResponse.NetworkError(result.code(), message)

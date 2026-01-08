@@ -1,9 +1,13 @@
 package com.example.learning1
 
+import com.example.learning1.data.dto.NetworkResponse
 import com.example.learning1.domain.LoginUseCase
+import com.example.learning1.domain.entity.User
 import com.example.learning1.presentation.LoginEvents
 import com.example.learning1.presentation.LoginViewModel
 import com.example.learning1.utils.TestDispatcherProvider
+import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
 
@@ -18,11 +22,11 @@ import org.junit.Before
 class ExampleUnitTest {
 
     private lateinit var viewmodel: LoginViewModel
-
+    val loginUseCase : LoginUseCase = mockk()
 
     @Before
     fun init(){
-        val loginUseCase : LoginUseCase = mockk()
+
         val testDispatcher = TestDispatcherProvider()
         viewmodel = LoginViewModel(loginUseCase,testDispatcher)
     }
@@ -108,7 +112,41 @@ class ExampleUnitTest {
 
     }
 
+    @Test
+    fun `login event network error check`(){
+        val userNameInput = "test"
+        val passwordNameInput = "12345678"
+        val statusCode = 401
+        val message = "UnAuthorised"
 
+        coEvery { loginUseCase.invoke(userNameInput,passwordNameInput) } returns NetworkResponse.NetworkError(statusCode,message)
+        viewmodel.onEvent(LoginEvents.LoginEvent(userNameInput,passwordNameInput))
+
+        val errorResult = viewmodel.loginState.value.errorMessage
+        val successResult = viewmodel.loginState.value.successMessage
+
+        assertEquals("$statusCode - $message",errorResult)
+        assertNull(successResult)
+
+    }
+
+
+    @Test
+    fun `login event success check`(){
+        val userNameInput = "test"
+        val passwordNameInput = "12345678"
+        val userResult : User = mockk()
+
+        coEvery { loginUseCase.invoke(userNameInput,passwordNameInput) } returns NetworkResponse.Success(userResult)
+        viewmodel.onEvent(LoginEvents.LoginEvent(userNameInput,passwordNameInput))
+
+        val successResult = viewmodel.loginState.value.successMessage
+        val errorResult = viewmodel.loginState.value.errorMessage
+
+        assertEquals(userResult.toString(),successResult)
+        assertNull(errorResult)
+
+    }
 
 
 
