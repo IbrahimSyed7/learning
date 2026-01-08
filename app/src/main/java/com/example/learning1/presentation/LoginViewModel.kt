@@ -33,16 +33,20 @@ class LoginViewModel @Inject constructor(
         when (event) {
             is LoginEvents.LoginEvent -> login(event.username, event.password)
             is LoginEvents.PasswordChangedEvent -> {
-                _loginState.update { it.copy(password = event.password) }
                 _loginState.update {
-                    it.copy(passwordError = validatePassword(event.password))
+                    it.copy(
+                        password = event.password,
+                        passwordError = validatePassword(event.password)
+                    )
                 }
             }
 
             is LoginEvents.UserNameChangedEvent -> {
-                _loginState.update { it.copy(username = event.userName) }
                 _loginState.update {
-                    it.copy(userNameError = validateUsername(event.userName))
+                    it.copy(
+                        username = event.userName,
+                        userNameError = validateUsername(event.userName)
+                    )
                 }
             }
         }
@@ -52,7 +56,7 @@ class LoginViewModel @Inject constructor(
         val userNameValidation = validateUsername(userName)
         val passwordValidation = validatePassword(password)
 
-        if (userNameValidation != null && passwordValidation != null) {
+        if (userNameValidation != null || passwordValidation != null) {
             _loginState.update {
                 it.copy(userNameError = userNameValidation, passwordError = passwordValidation)
             }
