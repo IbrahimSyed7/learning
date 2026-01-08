@@ -78,7 +78,7 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is NetworkResponse.NetworkError -> {
-                    _loginEffects.emit(LoginEffects.OnError("$Constants.exception ${result.message}"))
+                    _loginEffects.emit(LoginEffects.OnError("${Constants.exception}: ${result.message}"))
                     _loginState.update {
                         it.copy(
                             errorMessage = "${result.statusCode} - ${result.message}",
