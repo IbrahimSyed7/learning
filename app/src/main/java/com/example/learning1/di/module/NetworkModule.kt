@@ -1,6 +1,8 @@
 package com.example.learning1.di.module
 
 import com.example.learning1.di.APIService
+import com.example.learning1.utils.CoroutineDispatcherProvider
+import com.example.learning1.utils.DispatcherProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,4 +42,8 @@ class NetworkModule {
     fun provideAPIService(retrofit: Retrofit) : APIService{
         return retrofit.create(APIService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideDispatchers(): DispatcherProvider = CoroutineDispatcherProvider()
 }

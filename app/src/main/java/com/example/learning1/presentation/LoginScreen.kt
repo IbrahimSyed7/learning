@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -31,7 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.learning1.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
@@ -75,7 +79,7 @@ fun LoginView(modifier: Modifier, state: State<LoginStates>, onEvent: (LoginEven
             state.value.username, onValueChange = {
                 onEvent(LoginEvents.UserNameChangedEvent(it))
             }, enabled = state.value.isLoading.not(), label = {
-                Text("Username")
+                Text(stringResource(R.string.username))
             }, isError = state.value.userNameError != null,
             supportingText = {
                 if (state.value.userNameError != null) {
@@ -90,7 +94,7 @@ fun LoginView(modifier: Modifier, state: State<LoginStates>, onEvent: (LoginEven
                 onEvent(LoginEvents.PasswordChangedEvent(it))
             }, enabled = state.value.isLoading.not(),
             label = {
-                Text("Password")
+                Text(stringResource(R.string.password))
             },
             supportingText = {
                 if (state.value.passwordError != null) {
@@ -117,7 +121,7 @@ fun LoginView(modifier: Modifier, state: State<LoginStates>, onEvent: (LoginEven
             if (state.value.isLoading) {
                 CircularProgressIndicator()
             } else {
-                Text("Login", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                Text(stringResource(R.string.login), fontWeight = FontWeight.Bold, fontSize = 12.sp)
             }
         }
     }
